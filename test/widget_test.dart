@@ -14,8 +14,10 @@ void main() {
       ),
     );
 
-    expect(find.text('Leitor PDF'), findsOneWidget);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Importar arquivo'), findsOneWidget);
     expect(find.text('Recentes'), findsOneWidget);
-    expect(find.text('Escolher arquivo PDF'), findsOneWidget);
+    expect(find.text('Abrir'), findsOneWidget);
   });
 }
