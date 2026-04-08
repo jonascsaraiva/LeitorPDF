@@ -51,6 +51,12 @@ class PaginaDetalhesArquivo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final File arquivo = File(documento.caminho);
+    final DocumentoPdf documentoAtual = context.select(
+      (BlocBibliotecaPdf bloc) => bloc.state.documentos.firstWhere(
+        (DocumentoPdf item) => item.caminho == documento.caminho,
+        orElse: () => documento,
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -59,11 +65,11 @@ class PaginaDetalhesArquivo extends StatelessWidget {
           IconButton(
             onPressed: () {
               context.read<BlocBibliotecaPdf>().add(
-                    DocumentoFavoritoAlternado(documento),
+                    DocumentoFavoritoAlternado(documentoAtual),
                   );
             },
             icon: Icon(
-              documento.estaFavorito
+              documentoAtual.estaFavorito
                   ? Icons.star_rounded
                   : Icons.star_outline_rounded,
             ),
@@ -73,26 +79,26 @@ class PaginaDetalhesArquivo extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: <Widget>[
-          _itemInformacao(context, 'Nome', documento.nome),
+          _itemInformacao(context, 'Nome', documentoAtual.nome),
           const SizedBox(height: 12),
-          _itemInformacao(context, 'Caminho', documento.caminho),
+          _itemInformacao(context, 'Caminho', documentoAtual.caminho),
           const SizedBox(height: 12),
           _itemInformacao(
             context,
             'Tamanho',
-            _formatarTamanho(documento.tamanhoBytes),
+            _formatarTamanho(documentoAtual.tamanhoBytes),
           ),
           const SizedBox(height: 12),
           _itemInformacao(
             context,
             'Data de importacao',
-            documento.dataImportacao.toLocal().toString(),
+            documentoAtual.dataImportacao.toLocal().toString(),
           ),
           const SizedBox(height: 12),
           _itemInformacao(
             context,
             'Ultimo acesso',
-            documento.ultimoAcesso.toLocal().toString(),
+            documentoAtual.ultimoAcesso.toLocal().toString(),
           ),
           const SizedBox(height: 12),
           _itemInformacao(

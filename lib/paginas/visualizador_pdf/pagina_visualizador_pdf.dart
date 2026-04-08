@@ -105,6 +105,14 @@ class _PaginaVisualizadorPdfState extends State<PaginaVisualizadorPdf> {
   Widget build(BuildContext context) {
     final bool temaEscuro = Theme.of(context).brightness == Brightness.dark;
     final ColorScheme esquemaCores = Theme.of(context).colorScheme;
+    final bool estaEmPaisagem =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final DocumentoPdf documentoAtual = context.select(
+      (BlocBibliotecaPdf bloc) => bloc.state.documentos.firstWhere(
+        (DocumentoPdf item) => item.caminho == widget.documento.caminho,
+        orElse: () => widget.documento,
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -113,27 +121,28 @@ class _PaginaVisualizadorPdfState extends State<PaginaVisualizadorPdf> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              widget.documento.nome,
+              documentoAtual.nome,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            Text(
-              _totalPaginas == 0
-                  ? 'Carregando documento...'
-                  : 'Pagina $_paginaAtual de $_totalPaginas',
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
+            if (!estaEmPaisagem)
+              Text(
+                _totalPaginas == 0
+                    ? 'Carregando documento...'
+                    : 'Pagina $_paginaAtual de $_totalPaginas',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
           ],
         ),
         actions: <Widget>[
           IconButton(
             onPressed: () {
               context.read<BlocBibliotecaPdf>().add(
-                    DocumentoFavoritoAlternado(widget.documento),
+                    DocumentoFavoritoAlternado(documentoAtual),
                   );
             },
             icon: Icon(
-              widget.documento.estaFavorito
+              documentoAtual.estaFavorito
                   ? Icons.star_rounded
                   : Icons.star_outline_rounded,
             ),
@@ -142,7 +151,7 @@ class _PaginaVisualizadorPdfState extends State<PaginaVisualizadorPdf> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (_) => PaginaDetalhesArquivo(documento: widget.documento),
+                  builder: (_) => PaginaDetalhesArquivo(documento: documentoAtual),
                 ),
               );
             },
@@ -153,94 +162,140 @@ class _PaginaVisualizadorPdfState extends State<PaginaVisualizadorPdf> {
       body: Column(
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            padding: EdgeInsets.fromLTRB(16, estaEmPaisagem ? 8 : 12, 16, estaEmPaisagem ? 8 : 12),
             color: esquemaCores.surfaceContainerHighest,
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(
-                        controller: _controladorPagina,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Ir para pagina',
-                          hintText: _totalPaginas > 0
-                              ? '1 - $_totalPaginas'
-                              : '...',
-                          isDense: true,
-                          border: const OutlineInputBorder(),
-                        ),
-                        onSubmitted: (valor) => _pularParaPagina(),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    FilledButton(
-                      onPressed: _pularParaPagina,
-                      child: const Text('Ir'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: SegmentedButton<PdfScrollDirection>(
-                        segments: const <ButtonSegment<PdfScrollDirection>>[
-                          ButtonSegment<PdfScrollDirection>(
-                            value: PdfScrollDirection.vertical,
-                            label: Text('Vertical'),
-                            icon: Icon(Icons.swap_vert_rounded),
-                          ),
-                          ButtonSegment<PdfScrollDirection>(
-                            value: PdfScrollDirection.horizontal,
-                            label: Text('Horizontal'),
-                            icon: Icon(Icons.swap_horiz_rounded),
-                          ),
-                        ],
-                        selected: <PdfScrollDirection>{_direcaoRolagem},
-                        onSelectionChanged:
-                            (Set<PdfScrollDirection> selecao) {
-                              _alterarDirecaoRolagem(selecao.first);
-                            },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: FilledButton.tonalIcon(
+            child: estaEmPaisagem
+                ? Row(
+                    children: <Widget>[
+                      IconButton(
                         onPressed: _irParaPaginaAnterior,
                         icon: const Icon(Icons.chevron_left_rounded),
-                        label: const Text('Anterior'),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: FilledButton.tonalIcon(
+                      Expanded(
+                        child: TextField(
+                          controller: _controladorPagina,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Pagina',
+                            hintText: _totalPaginas > 0 ? '1-$_totalPaginas' : '...',
+                            isDense: true,
+                            border: const OutlineInputBorder(),
+                          ),
+                          onSubmitted: (valor) => _pularParaPagina(),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: _pularParaPagina,
+                        icon: const Icon(Icons.arrow_forward_rounded),
+                      ),
+                      const SizedBox(width: 8),
+                      PopupMenuButton<PdfScrollDirection>(
+                        onSelected: _alterarDirecaoRolagem,
+                        itemBuilder: (context) => <PopupMenuEntry<PdfScrollDirection>>[
+                          const PopupMenuItem<PdfScrollDirection>(
+                            value: PdfScrollDirection.vertical,
+                            child: Text('Vertical'),
+                          ),
+                          const PopupMenuItem<PdfScrollDirection>(
+                            value: PdfScrollDirection.horizontal,
+                            child: Text('Horizontal'),
+                          ),
+                        ],
+                        icon: const Icon(Icons.swap_vert_rounded),
+                      ),
+                      IconButton(
                         onPressed: _irParaProximaPagina,
                         icon: const Icon(Icons.chevron_right_rounded),
-                        label: const Text('Proxima'),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Zoom por gesto ativo. Role no sentido ${_direcaoRolagem == PdfScrollDirection.vertical ? 'vertical' : 'horizontal'}. Tema atual: ${temaEscuro ? 'escuro' : 'claro'}.',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    ],
+                  )
+                : Column(
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: TextField(
+                              controller: _controladorPagina,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: 'Ir para pagina',
+                                hintText: _totalPaginas > 0
+                                    ? '1 - $_totalPaginas'
+                                    : '...',
+                                isDense: true,
+                                border: const OutlineInputBorder(),
+                              ),
+                              onSubmitted: (valor) => _pularParaPagina(),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          FilledButton(
+                            onPressed: _pularParaPagina,
+                            child: const Text('Ir'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: SegmentedButton<PdfScrollDirection>(
+                              segments: const <ButtonSegment<PdfScrollDirection>>[
+                                ButtonSegment<PdfScrollDirection>(
+                                  value: PdfScrollDirection.vertical,
+                                  label: Text('Vertical'),
+                                  icon: Icon(Icons.swap_vert_rounded),
+                                ),
+                                ButtonSegment<PdfScrollDirection>(
+                                  value: PdfScrollDirection.horizontal,
+                                  label: Text('Horizontal'),
+                                  icon: Icon(Icons.swap_horiz_rounded),
+                                ),
+                              ],
+                              selected: <PdfScrollDirection>{_direcaoRolagem},
+                              onSelectionChanged:
+                                  (Set<PdfScrollDirection> selecao) {
+                                _alterarDirecaoRolagem(selecao.first);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: FilledButton.tonalIcon(
+                              onPressed: _irParaPaginaAnterior,
+                              icon: const Icon(Icons.chevron_left_rounded),
+                              label: const Text('Anterior'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: FilledButton.tonalIcon(
+                              onPressed: _irParaProximaPagina,
+                              icon: const Icon(Icons.chevron_right_rounded),
+                              label: const Text('Proxima'),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Zoom por gesto ativo. Role no sentido ${_direcaoRolagem == PdfScrollDirection.vertical ? 'vertical' : 'horizontal'}. Tema atual: ${temaEscuro ? 'escuro' : 'claro'}.',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           ),
           Expanded(
             child: SfPdfViewer.file(
-              File(widget.documento.caminho),
+              File(documentoAtual.caminho),
               controller: _controladorPdf,
               scrollDirection: _direcaoRolagem,
               canShowPaginationDialog: true,

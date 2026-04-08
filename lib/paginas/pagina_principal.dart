@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'biblioteca/pagina_biblioteca.dart';
 import 'configuracoes/pagina_configuracoes.dart';
+import 'favoritos/pagina_favoritos.dart';
 import 'inicio/pagina_inicial.dart';
 
 class PaginaPrincipal extends StatefulWidget {
@@ -17,6 +18,7 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
   final List<Widget> _paginas = const <Widget>[
     PaginaInicial(),
     PaginaBiblioteca(),
+    PaginaFavoritos(),
     PaginaConfiguracoes(),
   ];
 
@@ -41,7 +43,11 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
           ),
           NavigationDestination(
             icon: Icon(Icons.library_books_rounded),
-            label: 'Biblioteca',
+            label: 'Historico',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.star_rounded),
+            label: 'Favoritos',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_rounded),

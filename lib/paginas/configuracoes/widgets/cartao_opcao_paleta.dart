@@ -18,55 +18,35 @@ class CartaoOpcaoPaleta extends StatelessWidget {
   Widget build(BuildContext context) {
     final ColorScheme esquemaCores = Theme.of(context).colorScheme;
 
-    return InkWell(
-      onTap: aoTocar,
-      borderRadius: BorderRadius.circular(22),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        width: 160,
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: esquemaCores.surface,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: estaSelecionada
-                ? esquemaCores.primary
-                : esquemaCores.outlineVariant,
-            width: estaSelecionada ? 2 : 1,
-          ),
-          boxShadow: estaSelecionada
-              ? <BoxShadow>[
-                  BoxShadow(
-                    color: esquemaCores.primary.withValues(alpha: 0.18),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : null,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              height: 74,
-              decoration: BoxDecoration(
-                gradient: paleta.gradiente,
-                borderRadius: BorderRadius.circular(16),
+    return Expanded(
+      child: Center(
+        child: InkWell(
+          onTap: aoTocar,
+          borderRadius: BorderRadius.circular(999),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: paleta.gradiente,
+              border: Border.all(
+                color: estaSelecionada
+                    ? esquemaCores.onSurface
+                    : esquemaCores.outlineVariant,
+                width: estaSelecionada ? 3 : 1.5,
               ),
+              boxShadow: estaSelecionada
+                  ? <BoxShadow>[
+                      BoxShadow(
+                        color: esquemaCores.primary.withValues(alpha: 0.22),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
             ),
-            const SizedBox(height: 12),
-            Text(
-              paleta.rotulo,
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              estaSelecionada ? 'Selecionada' : 'Toque para aplicar',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
+          ),
         ),
       ),
     );

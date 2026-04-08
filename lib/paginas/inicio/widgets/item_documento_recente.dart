@@ -7,10 +7,12 @@ class ItemDocumentoRecente extends StatelessWidget {
     super.key,
     required this.documento,
     required this.aoTocar,
+    this.aoPressionarDetalhes,
   });
 
   final DocumentoPdf documento;
   final VoidCallback aoTocar;
+  final VoidCallback? aoPressionarDetalhes;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +64,13 @@ class ItemDocumentoRecente extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(Icons.chevron_right_rounded),
+              if (aoPressionarDetalhes != null)
+                IconButton(
+                  onPressed: aoPressionarDetalhes,
+                  icon: const Icon(Icons.info_outline_rounded),
+                )
+              else
+                const Icon(Icons.chevron_right_rounded),
             ],
           ),
         ),

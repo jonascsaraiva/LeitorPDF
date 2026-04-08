@@ -125,9 +125,7 @@ class PaginaConfiguracoes extends StatelessWidget {
                 titulo: 'Paleta de cores',
                 subtitulo:
                     'As paletas mudam o visual geral do aplicativo e o destaque da interface.',
-                filho: Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
+                filho: Row(
                   children: PaletaAplicativo.values.map((PaletaAplicativo paleta) {
                     return CartaoOpcaoPaleta(
                       paleta: paleta,
