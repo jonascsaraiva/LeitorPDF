@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../blocos/tema_aplicativo/bloc_tema_aplicativo.dart';
+import '../../localizacao/textos_aplicativo.dart';
 import '../../modelos/configuracoes_tema_aplicativo.dart';
 import '../../temas/paleta_aplicativo.dart';
 import 'widgets/cartao_opcao_paleta.dart';
@@ -22,7 +23,7 @@ class PaginaConfiguracoes extends StatelessWidget {
             estado.configuracoes.direcaoRolagemPadrao;
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Configuracoes')),
+          appBar: AppBar(title: Text(context.textos.configuracoes)),
           body: ListView(
             padding: const EdgeInsets.all(20),
             children: <Widget>[
@@ -36,7 +37,7 @@ class PaginaConfiguracoes extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Personalize o aplicativo',
+                      context.textos.personalizarAplicativo,
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(
                             color: Colors.white,
@@ -45,7 +46,7 @@ class PaginaConfiguracoes extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Escolha o modo de aparencia e a paleta que melhor combina com o seu leitor.',
+                      context.textos.descricaoConfiguracoes,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.white.withValues(alpha: 0.92),
                         height: 1.4,
@@ -56,9 +57,8 @@ class PaginaConfiguracoes extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               CartaoSecaoConfiguracoes(
-                titulo: 'Modo do app',
-                subtitulo:
-                    'Voce pode usar claro, escuro ou deixar o aplicativo seguir o sistema.',
+                titulo: context.textos.modoDoApp,
+                subtitulo: context.textos.descricaoModoApp,
                 filho: SeletorModoTema(
                   modoSelecionado: estado.configuracoes.modoTema,
                   aoAlterarModo: (ThemeMode modo) {
@@ -70,20 +70,19 @@ class PaginaConfiguracoes extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               CartaoSecaoConfiguracoes(
-                titulo: 'Leitura',
-                subtitulo:
-                    'Defina a direcao de rolagem que o leitor de PDF vai usar por padrao.',
+                titulo: context.textos.leitura,
+                subtitulo: context.textos.descricaoLeitura,
                 filho: SegmentedButton<PdfScrollDirection>(
-                  segments: const <ButtonSegment<PdfScrollDirection>>[
+                  segments: <ButtonSegment<PdfScrollDirection>>[
                     ButtonSegment<PdfScrollDirection>(
                       value: PdfScrollDirection.vertical,
-                      label: Text('Vertical'),
-                      icon: Icon(Icons.swap_vert_rounded),
+                      label: Text(context.textos.vertical),
+                      icon: const Icon(Icons.swap_vert_rounded),
                     ),
                     ButtonSegment<PdfScrollDirection>(
                       value: PdfScrollDirection.horizontal,
-                      label: Text('Horizontal'),
-                      icon: Icon(Icons.swap_horiz_rounded),
+                      label: Text(context.textos.horizontal),
+                      icon: const Icon(Icons.swap_horiz_rounded),
                     ),
                   ],
                   selected: <PdfScrollDirection>{direcaoRolagemPadrao},
@@ -96,18 +95,17 @@ class PaginaConfiguracoes extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               CartaoSecaoConfiguracoes(
-                titulo: 'Idioma',
-                subtitulo:
-                    'Preferencia salva para futuras traducoes da interface do aplicativo.',
+                titulo: context.textos.idioma,
+                subtitulo: context.textos.descricaoIdioma,
                 filho: DropdownButtonFormField<IdiomaAplicativo>(
                   initialValue: idiomaSelecionado,
-                  decoration: const InputDecoration(
-                    labelText: 'Idioma preferido',
+                  decoration: InputDecoration(
+                    labelText: context.textos.idiomaPreferido,
                   ),
                   items: IdiomaAplicativo.values.map((IdiomaAplicativo idioma) {
                     return DropdownMenuItem<IdiomaAplicativo>(
                       value: idioma,
-                      child: Text(idioma.rotulo),
+                      child: Text(context.textos.idiomaRotulo(idioma)),
                     );
                   }).toList(),
                   onChanged: (IdiomaAplicativo? idioma) {
@@ -122,12 +120,9 @@ class PaginaConfiguracoes extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               CartaoSecaoConfiguracoes(
-                titulo: 'Paleta de cores',
-                subtitulo:
-                    'As paletas mudam o visual geral do aplicativo e o destaque da interface.',
-                filho: Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
+                titulo: context.textos.paletaDeCores,
+                subtitulo: context.textos.descricaoPaleta,
+                filho: Row(
                   children: PaletaAplicativo.values.map((PaletaAplicativo paleta) {
                     return CartaoOpcaoPaleta(
                       paleta: paleta,

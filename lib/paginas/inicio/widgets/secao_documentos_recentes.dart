@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../localizacao/textos_aplicativo.dart';
 import '../../../modelos/documento_pdf.dart';
 import 'item_documento_recente.dart';
 
@@ -28,7 +29,7 @@ class SecaoDocumentosRecentes extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      'Recentes',
+                      context.textos.recentes,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),

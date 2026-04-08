@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../localizacao/textos_aplicativo.dart';
+
 class CartaoEstadoVazio extends StatelessWidget {
   const CartaoEstadoVazio({super.key});
 
@@ -20,13 +22,13 @@ class CartaoEstadoVazio extends StatelessWidget {
           Icon(Icons.menu_book_rounded, size: 48, color: esquemaCores.primary),
           const SizedBox(height: 12),
           Text(
-            'Nenhum PDF aberto por enquanto',
+            context.textos.nenhumPdfAberto,
             style: temaTexto.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
-            'Toque em "Escolher arquivo PDF" para selecionar um documento armazenado no celular.',
+            context.textos.descricaoNenhumPdfAberto,
             style: temaTexto.bodyMedium?.copyWith(height: 1.4),
             textAlign: TextAlign.center,
           ),

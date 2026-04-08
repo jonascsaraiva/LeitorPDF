@@ -7,8 +7,8 @@ import '../../modelos/documento_pdf.dart';
 import '../detalhes_arquivo/pagina_detalhes_arquivo.dart';
 import '../visualizador_pdf/pagina_visualizador_pdf.dart';
 
-class PaginaBiblioteca extends StatelessWidget {
-  const PaginaBiblioteca({super.key});
+class PaginaFavoritos extends StatelessWidget {
+  const PaginaFavoritos({super.key});
 
   Future<void> _abrirDocumento(BuildContext context, DocumentoPdf documento) async {
     context.read<BlocBibliotecaPdf>().add(DocumentoAcessado(documento));
@@ -31,31 +31,18 @@ class PaginaBiblioteca extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<BlocBibliotecaPdf, EstadoBibliotecaPdf>(
       builder: (context, estado) {
-        final List<DocumentoPdf> documentos = estado.documentos;
+        final List<DocumentoPdf> documentos = estado.favoritos;
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(context.textos.historico),
-            actions: <Widget>[
-              IconButton(
-                onPressed: estado.estaImportando
-                    ? null
-                    : () {
-                        context.read<BlocBibliotecaPdf>().add(
-                              const ImportacaoPdfSolicitada(),
-                            );
-                      },
-                icon: const Icon(Icons.file_upload_rounded),
-                tooltip: context.textos.importarPdf,
-              ),
-            ],
+            title: Text(context.textos.favoritos),
           ),
           body: documentos.isEmpty
               ? Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Text(
-                      context.textos.bibliotecaVazia,
+                      context.textos.favoritosVazio,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
@@ -64,7 +51,7 @@ class PaginaBiblioteca extends StatelessWidget {
               : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   itemCount: documentos.length,
-                  separatorBuilder: (contexto, indice) =>
+                  separatorBuilder: (context, indice) =>
                       const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final DocumentoPdf documento = documentos[index];
@@ -95,11 +82,7 @@ class PaginaBiblioteca extends StatelessWidget {
                                     DocumentoFavoritoAlternado(documento),
                                   );
                             },
-                            icon: Icon(
-                              documento.estaFavorito
-                                  ? Icons.star_rounded
-                                  : Icons.star_outline_rounded,
-                            ),
+                            icon: const Icon(Icons.star_rounded),
                           ),
                           IconButton(
                             onPressed: () => _abrirDetalhes(context, documento),

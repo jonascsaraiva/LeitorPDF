@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../localizacao/textos_aplicativo.dart';
 import '../../../temas/paleta_aplicativo.dart';
 
 class SecaoCabecalhoInicio extends StatelessWidget {
@@ -31,7 +32,7 @@ class SecaoCabecalhoInicio extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: Text(
-                  'Leitor PDF',
+                  context.textos.tituloAplicativo,
                   style: temaTexto.headlineMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
@@ -42,7 +43,7 @@ class SecaoCabecalhoInicio extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Escolha um PDF do armazenamento interno do celular e abra a leitura em poucos toques.',
+            context.textos.descricaoNenhumPdfAberto,
             style: temaTexto.bodyLarge?.copyWith(
               color: Colors.white.withValues(alpha: 0.92),
               height: 1.4,
@@ -56,7 +57,7 @@ class SecaoCabecalhoInicio extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
-              'Paleta ativa: ${paleta.rotulo}',
+              '${context.textos.paletaAtivaPrefixo} ${context.textos.tituloPaleta(paleta)}',
               style: temaTexto.labelLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -79,7 +80,9 @@ class SecaoCabecalhoInicio extends StatelessWidget {
                   )
                 : const Icon(Icons.folder_open_rounded),
             label: Text(
-              estaSelecionando ? 'Buscando PDF...' : 'Escolher arquivo PDF',
+              estaSelecionando
+                  ? context.textos.buscandoPdf
+                  : context.textos.escolherArquivoPdf,
             ),
           ),
         ],

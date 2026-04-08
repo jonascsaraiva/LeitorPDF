@@ -13,6 +13,17 @@ enum IdiomaAplicativo {
   const IdiomaAplicativo(this.rotulo);
 
   final String rotulo;
+
+  Locale get locale {
+    switch (this) {
+      case IdiomaAplicativo.ingles:
+        return const Locale('en');
+      case IdiomaAplicativo.espanhol:
+        return const Locale('es');
+      case IdiomaAplicativo.portugues:
+        return const Locale('pt');
+    }
+  }
 }
 
 class ConfiguracoesTemaAplicativo {
