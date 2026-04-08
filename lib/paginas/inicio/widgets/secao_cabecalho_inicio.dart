@@ -8,13 +8,11 @@ class SecaoCabecalhoInicio extends StatelessWidget {
     required this.estaSelecionando,
     required this.paleta,
     required this.aoPressionarAbrir,
-    required this.aoPressionarConfiguracoes,
   });
 
   final bool estaSelecionando;
   final PaletaAplicativo paleta;
   final VoidCallback aoPressionarAbrir;
-  final VoidCallback aoPressionarConfiguracoes;
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +37,6 @@ class SecaoCabecalhoInicio extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-              ),
-              IconButton.filledTonal(
-                onPressed: aoPressionarConfiguracoes,
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white.withValues(alpha: 0.18),
-                  foregroundColor: Colors.white,
-                ),
-                icon: const Icon(Icons.settings_rounded),
               ),
             ],
           ),

@@ -7,10 +7,12 @@ class CartaoDocumentoSelecionado extends StatelessWidget {
     super.key,
     required this.documento,
     required this.aoPressionarLer,
+    required this.aoPressionarDetalhes,
   });
 
   final DocumentoPdf? documento;
   final VoidCallback? aoPressionarLer;
+  final VoidCallback? aoPressionarDetalhes;
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +51,24 @@ class CartaoDocumentoSelecionado extends StatelessWidget {
             style: temaTexto.bodyMedium?.copyWith(height: 1.4),
           ),
           const SizedBox(height: 20),
-          FilledButton.icon(
-            onPressed: aoPressionarLer,
-            icon: const Icon(Icons.picture_as_pdf_rounded),
-            label: const Text('Ler PDF'),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: aoPressionarLer,
+                  icon: const Icon(Icons.picture_as_pdf_rounded),
+                  label: const Text('Ler PDF'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: aoPressionarDetalhes,
+                  icon: const Icon(Icons.info_outline_rounded),
+                  label: const Text('Detalhes'),
+                ),
+              ),
+            ],
           ),
         ],
       ),

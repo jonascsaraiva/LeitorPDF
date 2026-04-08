@@ -19,3 +19,15 @@ class PaletaTemaAlterada extends EventoTemaAplicativo {
 
   final PaletaAplicativo paleta;
 }
+
+class DirecaoRolagemPadraoAlterada extends EventoTemaAplicativo {
+  const DirecaoRolagemPadraoAlterada(this.direcaoRolagem);
+
+  final PdfScrollDirection direcaoRolagem;
+}
+
+class IdiomaAplicativoAlterado extends EventoTemaAplicativo {
+  const IdiomaAplicativoAlterado(this.idioma);
+
+  final IdiomaAplicativo idioma;
+}

@@ -1,9 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
+import '../../blocos/biblioteca_pdf/bloc_biblioteca_pdf.dart';
+import '../../blocos/tema_aplicativo/bloc_tema_aplicativo.dart';
 import '../../modelos/documento_pdf.dart';
+import '../detalhes_arquivo/pagina_detalhes_arquivo.dart';
 
 class PaginaVisualizadorPdf extends StatefulWidget {
   const PaginaVisualizadorPdf({super.key, required this.documento});
@@ -18,9 +22,19 @@ class _PaginaVisualizadorPdfState extends State<PaginaVisualizadorPdf> {
   final PdfViewerController _controladorPdf = PdfViewerController();
   final TextEditingController _controladorPagina = TextEditingController();
 
-  PdfScrollDirection _direcaoRolagem = PdfScrollDirection.vertical;
+  late PdfScrollDirection _direcaoRolagem;
   int _paginaAtual = 1;
   int _totalPaginas = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _direcaoRolagem = context
+        .read<BlocTemaAplicativo>()
+        .state
+        .configuracoes
+        .direcaoRolagemPadrao;
+  }
 
   @override
   void dispose() {
@@ -111,6 +125,30 @@ class _PaginaVisualizadorPdfState extends State<PaginaVisualizadorPdf> {
             ),
           ],
         ),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () {
+              context.read<BlocBibliotecaPdf>().add(
+                    DocumentoFavoritoAlternado(widget.documento),
+                  );
+            },
+            icon: Icon(
+              widget.documento.estaFavorito
+                  ? Icons.star_rounded
+                  : Icons.star_outline_rounded,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => PaginaDetalhesArquivo(documento: widget.documento),
+                ),
+              );
+            },
+            icon: const Icon(Icons.info_outline_rounded),
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[

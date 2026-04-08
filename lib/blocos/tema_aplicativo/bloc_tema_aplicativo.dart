@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../modelos/configuracoes_tema_aplicativo.dart';
 import '../../temas/paleta_aplicativo.dart';
@@ -14,6 +15,8 @@ class BlocTemaAplicativo
     on<TemaAplicativoIniciado>(_aoIniciar);
     on<ModoTemaAlterado>(_aoAlterarModoTema);
     on<PaletaTemaAlterada>(_aoAlterarPaletaTema);
+    on<DirecaoRolagemPadraoAlterada>(_aoAlterarDirecaoRolagemPadrao);
+    on<IdiomaAplicativoAlterado>(_aoAlterarIdiomaAplicativo);
   }
 
   static const String _chavePreferencias = 'configuracoes_tema_aplicativo';
@@ -63,6 +66,42 @@ class BlocTemaAplicativo
     final ConfiguracoesTemaAplicativo configuracoes =
         state.configuracoes.copyWith(
       paleta: evento.paleta,
+    );
+
+    emitir(
+      state.copyWith(
+        configuracoes: configuracoes,
+        estaPronto: true,
+      ),
+    );
+    await _persistir(configuracoes);
+  }
+
+  Future<void> _aoAlterarDirecaoRolagemPadrao(
+    DirecaoRolagemPadraoAlterada evento,
+    Emitter<EstadoTemaAplicativo> emitir,
+  ) async {
+    final ConfiguracoesTemaAplicativo configuracoes =
+        state.configuracoes.copyWith(
+      direcaoRolagemPadrao: evento.direcaoRolagem,
+    );
+
+    emitir(
+      state.copyWith(
+        configuracoes: configuracoes,
+        estaPronto: true,
+      ),
+    );
+    await _persistir(configuracoes);
+  }
+
+  Future<void> _aoAlterarIdiomaAplicativo(
+    IdiomaAplicativoAlterado evento,
+    Emitter<EstadoTemaAplicativo> emitir,
+  ) async {
+    final ConfiguracoesTemaAplicativo configuracoes =
+        state.configuracoes.copyWith(
+      idioma: evento.idioma,
     );
 
     emitir(

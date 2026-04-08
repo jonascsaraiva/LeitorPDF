@@ -1,47 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../blocos/biblioteca_pdf/bloc_biblioteca_pdf.dart';
 import '../../blocos/tema_aplicativo/bloc_tema_aplicativo.dart';
-import '../../controladores/controlador_leitor_pdf.dart';
 import '../../modelos/documento_pdf.dart';
 import '../../temas/paleta_aplicativo.dart';
-import '../configuracoes/pagina_configuracoes.dart';
+import '../detalhes_arquivo/pagina_detalhes_arquivo.dart';
 import '../visualizador_pdf/pagina_visualizador_pdf.dart';
 import 'widgets/cartao_documento_selecionado.dart';
 import 'widgets/cartao_estado_vazio.dart';
+import 'widgets/item_documento_recente.dart';
 import 'widgets/secao_cabecalho_inicio.dart';
-import 'widgets/secao_documentos_recentes.dart';
 
-class PaginaInicial extends StatefulWidget {
+class PaginaInicial extends StatelessWidget {
   const PaginaInicial({super.key});
 
-  @override
-  State<PaginaInicial> createState() => _PaginaInicialState();
-}
-
-class _PaginaInicialState extends State<PaginaInicial> {
-  late final ControladorLeitorPdf _controlador;
-
-  @override
-  void initState() {
-    super.initState();
-    _controlador = ControladorLeitorPdf();
-    _controlador.addListener(_escutarMudancas);
-    _controlador.carregarDocumentosRecentes();
-  }
-
-  @override
-  void dispose() {
-    _controlador.removeListener(_escutarMudancas);
-    _controlador.dispose();
-    super.dispose();
-  }
-
-  Future<void> _abrirDocumento(DocumentoPdf documento) async {
-    if (!mounted) {
-      return;
-    }
-
+  Future<void> _abrirDocumento(BuildContext context, DocumentoPdf documento) async {
+    context.read<BlocBibliotecaPdf>().add(DocumentoAcessado(documento));
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => PaginaVisualizadorPdf(documento: documento),
@@ -49,73 +24,104 @@ class _PaginaInicialState extends State<PaginaInicial> {
     );
   }
 
-  Future<void> _selecionarEAbrirPdf() async {
-    final DocumentoPdf? documento = await _controlador.selecionarPdf();
-    if (documento == null || !mounted) {
-      return;
-    }
-
-    await _abrirDocumento(documento);
+  Future<void> _abrirDetalhes(BuildContext context, DocumentoPdf documento) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => PaginaDetalhesArquivo(documento: documento),
+      ),
+    );
   }
 
-  Future<void> _reabrirDocumentoRecente(DocumentoPdf documento) async {
-    await _controlador.selecionarDocumento(documento);
-    if (!mounted) {
-      return;
-    }
-
-    await _abrirDocumento(documento);
-  }
-
-  Future<void> _abrirConfiguracoes() async {
-    if (!mounted) {
-      return;
-    }
-
-    await Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const PaginaConfiguracoes()));
-  }
-
-  void _escutarMudancas() {
-    final String? mensagemErro = _controlador.mensagemErro;
-
-    if (mensagemErro == null || !mounted) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(mensagemErro)));
-
-    _controlador.limparErro();
+  Widget _secaoLista({
+    required BuildContext context,
+    required String titulo,
+    required List<DocumentoPdf> documentos,
+    required IconData iconeVazio,
+    required String mensagemVazia,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          titulo,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: 12),
+        if (documentos.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: <Widget>[
+                Icon(iconeVazio),
+                const SizedBox(width: 12),
+                Expanded(child: Text(mensagemVazia)),
+              ],
+            ),
+          )
+        else
+          Column(
+            children: documentos.map((DocumentoPdf documento) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: ItemDocumentoRecente(
+                  documento: documento,
+                  aoTocar: () => _abrirDocumento(context, documento),
+                ),
+              );
+            }).toList(),
+          ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: AnimatedBuilder(
-          animation: _controlador,
-          builder: (context, child) {
-            final DocumentoPdf? documentoSelecionado =
-                _controlador.documentoSelecionado;
-            final List<DocumentoPdf> documentosRecentes =
-                _controlador.documentosRecentes;
-            final EstadoTemaAplicativo estadoTema =
-                context.watch<BlocTemaAplicativo>().state;
-            final PaletaAplicativo paleta = estadoTema.configuracoes.paleta;
+    final EstadoTemaAplicativo estadoTema =
+        context.watch<BlocTemaAplicativo>().state;
+    final PaletaAplicativo paleta = estadoTema.configuracoes.paleta;
 
-            return CustomScrollView(
+    return BlocConsumer<BlocBibliotecaPdf, EstadoBibliotecaPdf>(
+      listenWhen: (anterior, atual) =>
+          anterior.documentoAbertoAgora?.caminho !=
+              atual.documentoAbertoAgora?.caminho &&
+          atual.documentoAbertoAgora != null,
+      listener: (context, estado) async {
+        if (estado.mensagemErro != null) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(estado.mensagemErro!)));
+        }
+        if (estado.documentoAbertoAgora != null) {
+          await _abrirDocumento(context, estado.documentoAbertoAgora!);
+        }
+      },
+      builder: (context, estado) {
+        final DocumentoPdf? ultimoDocumento = estado.documentosRecentes.isNotEmpty
+            ? estado.documentosRecentes.first
+            : null;
+
+        return Scaffold(
+          body: SafeArea(
+            child: CustomScrollView(
               slivers: <Widget>[
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
                     child: SecaoCabecalhoInicio(
-                      estaSelecionando: _controlador.estaSelecionando,
+                      estaSelecionando: estado.estaImportando,
                       paleta: paleta,
-                      aoPressionarAbrir: _selecionarEAbrirPdf,
-                      aoPressionarConfiguracoes: _abrirConfiguracoes,
+                      aoPressionarAbrir: () {
+                        context.read<BlocBibliotecaPdf>().add(
+                              const ImportacaoPdfSolicitada(),
+                            );
+                      },
                     ),
                   ),
                 ),
@@ -123,34 +129,50 @@ class _PaginaInicialState extends State<PaginaInicial> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: CartaoDocumentoSelecionado(
-                      documento: documentoSelecionado,
-                      aoPressionarLer: documentoSelecionado == null
+                      documento: ultimoDocumento,
+                      aoPressionarLer: ultimoDocumento == null
                           ? null
-                          : () => _abrirDocumento(documentoSelecionado),
+                          : () => _abrirDocumento(context, ultimoDocumento),
+                      aoPressionarDetalhes: ultimoDocumento == null
+                          ? null
+                          : () => _abrirDetalhes(context, ultimoDocumento),
                     ),
                   ),
                 ),
-                if (documentosRecentes.isEmpty && !_controlador.estaCarregando)
-                  const SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 32,
-                      ),
-                      child: CartaoEstadoVazio(),
-                    ),
-                  )
-                else
-                  SecaoDocumentosRecentes(
-                    documentos: documentosRecentes,
-                    estaCarregando: _controlador.estaCarregando,
-                    aoTocarDocumento: _reabrirDocumentoRecente,
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                    child: estado.documentos.isEmpty && !estado.estaCarregando
+                        ? const CartaoEstadoVazio()
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              _secaoLista(
+                                context: context,
+                                titulo: 'Favoritos',
+                                documentos: estado.favoritos.take(5).toList(),
+                                iconeVazio: Icons.star_outline_rounded,
+                                mensagemVazia:
+                                    'Voce ainda nao marcou nenhum PDF como favorito.',
+                              ),
+                              const SizedBox(height: 20),
+                              _secaoLista(
+                                context: context,
+                                titulo: 'Recentes',
+                                documentos: estado.documentosRecentes.take(5).toList(),
+                                iconeVazio: Icons.history_rounded,
+                                mensagemVazia:
+                                    'Os PDFs que voce abrir ou importar vao aparecer aqui.',
+                              ),
+                            ],
+                          ),
                   ),
+                ),
               ],
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
