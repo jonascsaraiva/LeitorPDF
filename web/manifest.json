@@ -1,11 +1,11 @@
 {
-    "name": "leitor_pdf",
-    "short_name": "leitor_pdf",
+    "name": "Leitor PDF",
+    "short_name": "Leitor PDF",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F6F0E8",
+    "theme_color": "#EA580C",
+    "description": "Leitor de PDF com acesso a arquivos do dispositivo.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

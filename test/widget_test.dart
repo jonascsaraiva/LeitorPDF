@@ -1,16 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leitor_pdf/app.dart';
-import 'package:leitor_pdf/bloc/app_theme/app_theme_bloc.dart';
+import 'package:leitor_pdf/aplicativo.dart';
+import 'package:leitor_pdf/blocos/tema_aplicativo/bloc_tema_aplicativo.dart';
 
 void main() {
   testWidgets('carrega tela inicial do leitor de PDF', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      BlocProvider<AppThemeBloc>(
-        create: (_) => AppThemeBloc(),
-        child: const PdfReaderApp(),
+      BlocProvider<BlocTemaAplicativo>(
+        create: (_) => BlocTemaAplicativo(),
+        child: const AplicativoLeitorPdf(),
       ),
     );
 
