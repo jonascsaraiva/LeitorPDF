@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../localizacao/textos_aplicativo.dart';
 import 'biblioteca/pagina_biblioteca.dart';
 import 'configuracoes/pagina_configuracoes.dart';
 import 'favoritos/pagina_favoritos.dart';
@@ -36,22 +37,22 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
             _indiceAtual = indice;
           });
         },
-        destinations: const <NavigationDestination>[
+        destinations: <NavigationDestination>[
           NavigationDestination(
-            icon: Icon(Icons.home_rounded),
-            label: 'Inicio',
+            icon: const Icon(Icons.home_rounded),
+            label: context.textos.inicio,
           ),
           NavigationDestination(
-            icon: Icon(Icons.library_books_rounded),
-            label: 'Historico',
+            icon: const Icon(Icons.library_books_rounded),
+            label: context.textos.historico,
           ),
           NavigationDestination(
-            icon: Icon(Icons.star_rounded),
-            label: 'Favoritos',
+            icon: const Icon(Icons.star_rounded),
+            label: context.textos.favoritos,
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_rounded),
-            label: 'Configuracoes',
+            icon: const Icon(Icons.settings_rounded),
+            label: context.textos.configuracoes,
           ),
         ],
       ),

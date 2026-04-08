@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'blocos/biblioteca_pdf/bloc_biblioteca_pdf.dart';
 import 'blocos/tema_aplicativo/bloc_tema_aplicativo.dart';
+import 'localizacao/textos_aplicativo.dart';
 import 'paginas/pagina_principal.dart';
 import 'temas/fabrica_tema_aplicativo.dart';
 
@@ -21,7 +23,15 @@ class AplicativoLeitorPdf extends StatelessWidget {
         builder: (context, estado) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Leitor PDF',
+            onGenerateTitle: (BuildContext context) => context.textos.tituloAplicativo,
+            locale: estado.configuracoes.idioma.locale,
+            supportedLocales: TextosAplicativo.localesSuportados,
+            localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+              TextosAplicativo.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
             themeMode: estado.configuracoes.modoTema,
             theme: FabricaTemaAplicativo.criarTema(
               paleta: estado.configuracoes.paleta,

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocos/biblioteca_pdf/bloc_biblioteca_pdf.dart';
 import '../../blocos/tema_aplicativo/bloc_tema_aplicativo.dart';
+import '../../localizacao/textos_aplicativo.dart';
 import '../../modelos/documento_pdf.dart';
 import '../../temas/paleta_aplicativo.dart';
 import '../detalhes_arquivo/pagina_detalhes_arquivo.dart';
@@ -14,7 +15,10 @@ import 'widgets/secao_cabecalho_inicio.dart';
 class PaginaInicial extends StatelessWidget {
   const PaginaInicial({super.key});
 
-  Future<void> _abrirDocumento(BuildContext context, DocumentoPdf documento) async {
+  Future<void> _abrirDocumento(
+    BuildContext context,
+    DocumentoPdf documento,
+  ) async {
     context.read<BlocBibliotecaPdf>().add(DocumentoAcessado(documento));
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -23,7 +27,10 @@ class PaginaInicial extends StatelessWidget {
     );
   }
 
-  Future<void> _abrirDetalhes(BuildContext context, DocumentoPdf documento) async {
+  Future<void> _abrirDetalhes(
+    BuildContext context,
+    DocumentoPdf documento,
+  ) async {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => PaginaDetalhesArquivo(documento: documento),
@@ -33,8 +40,9 @@ class PaginaInicial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EstadoTemaAplicativo estadoTema =
-        context.watch<BlocTemaAplicativo>().state;
+    final EstadoTemaAplicativo estadoTema = context
+        .watch<BlocTemaAplicativo>()
+        .state;
     final PaletaAplicativo paleta = estadoTema.configuracoes.paleta;
 
     return BlocConsumer<BlocBibliotecaPdf, EstadoBibliotecaPdf>(
@@ -46,14 +54,24 @@ class PaginaInicial extends StatelessWidget {
         if (estado.mensagemErro != null) {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(estado.mensagemErro!)));
+            ..showSnackBar(
+              SnackBar(
+                content: Text(
+                  context.textos.traduzirMensagemErroBiblioteca(
+                    estado.mensagemErro!,
+                  ),
+                ),
+              ),
+            );
         }
         if (estado.documentoAbertoAgora != null) {
           await _abrirDocumento(context, estado.documentoAbertoAgora!);
         }
       },
       builder: (context, estado) {
-        final List<DocumentoPdf> recentes = estado.documentosRecentes.take(5).toList();
+        final List<DocumentoPdf> recentes = estado.documentosRecentes
+            .take(5)
+            .toList();
 
         return Scaffold(
           body: SafeArea(
@@ -67,8 +85,8 @@ class PaginaInicial extends StatelessWidget {
                       paleta: paleta,
                       aoPressionarAbrir: () {
                         context.read<BlocBibliotecaPdf>().add(
-                              const ImportacaoPdfSolicitada(),
-                            );
+                          const ImportacaoPdfSolicitada(),
+                        );
                       },
                     ),
                   ),
@@ -88,7 +106,9 @@ class PaginaInicial extends StatelessWidget {
                             width: 56,
                             height: 56,
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primaryContainer,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primaryContainer,
                               borderRadius: BorderRadius.circular(18),
                             ),
                             child: Icon(
@@ -102,14 +122,13 @@ class PaginaInicial extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  'Importar arquivo',
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w800,
-                                      ),
+                                  context.textos.importarArquivo,
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.w800),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Escolha um PDF do celular para abrir e salvar no historico.',
+                                  context.textos.descricaoImportarArquivo,
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ],
@@ -121,10 +140,10 @@ class PaginaInicial extends StatelessWidget {
                                 ? null
                                 : () {
                                     context.read<BlocBibliotecaPdf>().add(
-                                          const ImportacaoPdfSolicitada(),
-                                        );
+                                      const ImportacaoPdfSolicitada(),
+                                    );
                                   },
-                            child: const Text('Abrir'),
+                            child: Text(context.textos.abrir),
                           ),
                         ],
                       ),
@@ -140,10 +159,9 @@ class PaginaInicial extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                'Recentes',
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.w800,
-                                    ),
+                                context.textos.recentes,
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(fontWeight: FontWeight.w800),
                               ),
                               const SizedBox(height: 12),
                               if (recentes.isEmpty)
@@ -151,21 +169,28 @@ class PaginaInicial extends StatelessWidget {
                                   width: double.infinity,
                                   padding: const EdgeInsets.all(18),
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.surface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surface,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
-                                  child: const Text(
-                                    'Os ultimos 5 PDFs abertos ou importados vao aparecer aqui.',
+                                  child: Text(
+                                    context.textos.descricaoRecentesVazio,
                                   ),
                                 )
                               else
                                 Column(
-                                  children: recentes.map((DocumentoPdf documento) {
+                                  children: recentes.map((
+                                    DocumentoPdf documento,
+                                  ) {
                                     return Padding(
-                                      padding: const EdgeInsets.only(bottom: 12),
+                                      padding: const EdgeInsets.only(
+                                        bottom: 12,
+                                      ),
                                       child: ItemDocumentoRecente(
                                         documento: documento,
-                                        aoTocar: () => _abrirDocumento(context, documento),
+                                        aoTocar: () =>
+                                            _abrirDocumento(context, documento),
                                         aoPressionarDetalhes: () =>
                                             _abrirDetalhes(context, documento),
                                       ),

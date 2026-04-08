@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../localizacao/textos_aplicativo.dart';
+
 class SeletorModoTema extends StatelessWidget {
   const SeletorModoTema({
     super.key,
@@ -12,22 +14,23 @@ class SeletorModoTema extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textos = context.textos;
     return SegmentedButton<ThemeMode>(
-      segments: const <ButtonSegment<ThemeMode>>[
+      segments: <ButtonSegment<ThemeMode>>[
         ButtonSegment<ThemeMode>(
           value: ThemeMode.light,
-          label: Text('Claro'),
-          icon: Icon(Icons.light_mode_rounded),
+          label: Text(textos.claro),
+          icon: const Icon(Icons.light_mode_rounded),
         ),
         ButtonSegment<ThemeMode>(
           value: ThemeMode.dark,
-          label: Text('Escuro'),
-          icon: Icon(Icons.dark_mode_rounded),
+          label: Text(textos.escuro),
+          icon: const Icon(Icons.dark_mode_rounded),
         ),
         ButtonSegment<ThemeMode>(
           value: ThemeMode.system,
-          label: Text('Sistema'),
-          icon: Icon(Icons.settings_suggest_rounded),
+          label: Text(textos.sistema),
+          icon: const Icon(Icons.settings_suggest_rounded),
         ),
       ],
       selected: <ThemeMode>{modoSelecionado},

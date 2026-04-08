@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocos/biblioteca_pdf/bloc_biblioteca_pdf.dart';
+import '../../localizacao/textos_aplicativo.dart';
 import '../../modelos/documento_pdf.dart';
 import '../detalhes_arquivo/pagina_detalhes_arquivo.dart';
 import '../visualizador_pdf/pagina_visualizador_pdf.dart';
@@ -34,7 +35,7 @@ class PaginaBiblioteca extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Biblioteca'),
+            title: Text(context.textos.historico),
             actions: <Widget>[
               IconButton(
                 onPressed: estado.estaImportando
@@ -45,7 +46,7 @@ class PaginaBiblioteca extends StatelessWidget {
                             );
                       },
                 icon: const Icon(Icons.file_upload_rounded),
-                tooltip: 'Importar PDF',
+                tooltip: context.textos.importarPdf,
               ),
             ],
           ),
@@ -54,7 +55,7 @@ class PaginaBiblioteca extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Text(
-                      'Sua biblioteca ainda esta vazia. Importe um PDF para comecar.',
+                      context.textos.bibliotecaVazia,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
@@ -103,6 +104,7 @@ class PaginaBiblioteca extends StatelessWidget {
                           IconButton(
                             onPressed: () => _abrirDetalhes(context, documento),
                             icon: const Icon(Icons.info_outline_rounded),
+                            tooltip: context.textos.verDetalhes,
                           ),
                         ],
                       ),

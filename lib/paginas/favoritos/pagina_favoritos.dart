@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocos/biblioteca_pdf/bloc_biblioteca_pdf.dart';
+import '../../localizacao/textos_aplicativo.dart';
 import '../../modelos/documento_pdf.dart';
 import '../detalhes_arquivo/pagina_detalhes_arquivo.dart';
 import '../visualizador_pdf/pagina_visualizador_pdf.dart';
@@ -34,14 +35,14 @@ class PaginaFavoritos extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Favoritos'),
+            title: Text(context.textos.favoritos),
           ),
           body: documentos.isEmpty
               ? Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Text(
-                      'Voce ainda nao adicionou nenhum PDF aos favoritos.',
+                      context.textos.favoritosVazio,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
@@ -86,6 +87,7 @@ class PaginaFavoritos extends StatelessWidget {
                           IconButton(
                             onPressed: () => _abrirDetalhes(context, documento),
                             icon: const Icon(Icons.info_outline_rounded),
+                            tooltip: context.textos.verDetalhes,
                           ),
                         ],
                       ),
